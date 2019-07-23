@@ -6,6 +6,7 @@ int Non = 0;
 int Add_Data = 0;
 int Con_Data = 0;
 
+//åˆå§‹åŒ–çº¢å¤–å’Œè®¾ç½®ä¸­æ–­
 void Infrared_Init()
 {
 	GPIO_InitTypeDef	GPIO_InitStruct;
@@ -15,41 +16,42 @@ void Infrared_Init()
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	
-	GPIO_InitStruct.GPIO_Mode		= GPIO_Mode_IN;
+	GPIO_InitStruct.GPIO_Mode	= GPIO_Mode_IN;
 	GPIO_InitStruct.GPIO_OType	= GPIO_OType_PP;
-	GPIO_InitStruct.GPIO_Pin		= GPIO_Pin_8;
-	GPIO_InitStruct.GPIO_PuPd		= GPIO_PuPd_UP;
+	GPIO_InitStruct.GPIO_Pin	= GPIO_Pin_8;
+	GPIO_InitStruct.GPIO_PuPd	= GPIO_PuPd_UP;
 	GPIO_InitStruct.GPIO_Speed	= GPIO_Speed_25MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStruct);
 	
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource8);
 	
-	EXTI_InitStruct.EXTI_Line			= EXTI_Line8;
+	EXTI_InitStruct.EXTI_Line	= EXTI_Line8;
 	EXTI_InitStruct.EXTI_LineCmd	= ENABLE;
-	EXTI_InitStruct.EXTI_Mode			= EXTI_Mode_Interrupt;
+	EXTI_InitStruct.EXTI_Mode	= EXTI_Mode_Interrupt;
 	EXTI_InitStruct.EXTI_Trigger	= EXTI_Trigger_Falling;
 	EXTI_Init(&EXTI_InitStruct);
 	
-	NVIC_InitStruct.NVIC_IRQChannel										= EXTI9_5_IRQn;
-	NVIC_InitStruct.NVIC_IRQChannelCmd								= ENABLE;
+	NVIC_InitStruct.NVIC_IRQChannel				= EXTI9_5_IRQn;
+	NVIC_InitStruct.NVIC_IRQChannelCmd			= ENABLE;
 	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority	= 0;
-	NVIC_InitStruct.NVIC_IRQChannelSubPriority				= 0;
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority		= 0;
 	NVIC_Init(&NVIC_InitStruct);
 	
 }
 
+//ä¸­æ–­å‡½æ•°
 void EXTI9_5_IRQHandler()
 {
 	int count = 0;
 	EXTI_ClearITPendingBit(EXTI_Line8);
 	
-	//printf("%d", Non);µ÷ÊÔ´úÂë
+	//printf("%d", Non);è°ƒè¯•ä»£ç 
 	
 	Non = 0;
 	if(Add_Data != 0 &&Con_Data != 0)return;
 	if(!ReadGPA8){
 		
-		//Òıµ¼Âë9ms
+		//å¼•å¯¼ç 9msä½ç”µå¹³
 		while(!ReadGPA8){
 			delay_ms(1);
 			if(++count > 12){
@@ -64,7 +66,7 @@ void EXTI9_5_IRQHandler()
 		}
 		count = 0;
 		
-		//Òıµ¼Âë4.5ms
+		//å¼•å¯¼ç 4.5msé«˜ç”µå¹³
 		while(ReadGPA8){
 			delay_ms(1);
 			if(++count > 8){
@@ -78,11 +80,11 @@ void EXTI9_5_IRQHandler()
 		}
 		count = 0;
 		
-		//¿ªÊ¼½ÓÊÕÊı¾İ²¢¼ìÑé
+		//å¼€å§‹æ¥æ”¶æ•°æ®å¹¶æ£€éªŒ
 		GetData();
 		if(Non != 0)return;
 		
-		//¼ì²â½áÊøÎ»
+		//æ£€æµ‹ç»“æŸä½
 		
 		//printf("AData:%d  CData:%d\r\n", Add_Data, Con_Data);
 		Non = 0;
@@ -96,7 +98,7 @@ void GetData()
 	int count = 0;
 	int i = 0;
 	if(!ReadGPA8){
-		//½ÓÊÕµØÖ·Âë¿ªÊ¼
+		//æ¥æ”¶åœ°å€ç å¼€å§‹
 		Add_Data = 0;
 		while(i < 8){
 			while(!ReadGPA8){
@@ -133,7 +135,7 @@ void GetData()
 			i++;
 		}
 		
-		//¼ìÑéµØÖ·Âë
+		//æ£€éªŒåœ°å€ç 
 		i = 0;
 		while(i < 8){
 			while(!ReadGPA8){
@@ -174,7 +176,7 @@ void GetData()
 		}
 		
 		
-		//½ÓÊÕ¿ØÖÆÂë¿ªÊ¼
+		//æ¥æ”¶æ§åˆ¶ç å¼€å§‹
 		Con_Data = 0;
 		i = 0;
 		while(i < 8){
@@ -206,7 +208,7 @@ void GetData()
 			i++;
 		}
 		
-		//¼ìÑé¿ØÖÆÂë
+		//æ£€éªŒæ§åˆ¶ç 
 		i = 0;
 		while(i < 8){
 			while(!ReadGPA8){
